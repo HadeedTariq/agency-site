@@ -8,8 +8,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go-htmx-template/internal/server/middleware"
-	"go-htmx-template/internal/version"
+	"agency-site/internal/server/middleware"
+	"agency-site/internal/version"
 )
 
 //nolint:paralleltest // mutates package-level version.Value; parallelism would cause a data race

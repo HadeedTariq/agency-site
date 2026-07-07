@@ -8,10 +8,10 @@ import (
 	"os"
 	"strconv"
 
-	"go-htmx-template/internal/db"
-	"go-htmx-template/internal/log"
-	"go-htmx-template/internal/server"
-	"go-htmx-template/internal/server/router"
+	"agency-site/internal/db"
+	"agency-site/internal/log"
+	"agency-site/internal/server"
+	"agency-site/internal/server/router"
 
 	"github.com/joho/godotenv"
 )
@@ -27,7 +27,7 @@ func main() {
 	)
 	err := godotenv.Load()
 	if err != nil {
-		logger.Error("error loading env variables: %s", err.Error())
+		logger.Error("error  env variables: %s", err.Error())
 	}
 
 	if err := run(logger); err != nil {

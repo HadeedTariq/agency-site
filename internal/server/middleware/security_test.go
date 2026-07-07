@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"go-htmx-template/internal/server/middleware"
+	"agency-site/internal/server/middleware"
 )
 
 func discardLogger() *slog.Logger {

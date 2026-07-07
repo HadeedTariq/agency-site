@@ -1,0 +1,181 @@
+{
+  "services": [
+    {
+      "service": "Digital",
+      "link": "/",
+      "subservices": [
+        {
+          "name": "Digital Consulting & Strategy",
+          "link": "/service/digital-consulting-strategy"
+        },
+        { "name": "Digital Commerce", "link": "/service/digital-commerce" },
+        {
+          "name": "Business Applications",
+          "link": "/service/business-applications"
+        }
+      ]
+    },
+    {
+      "service": "Data & Analytics",
+      "link": "/",
+      "subservices": [
+        { "name": "Data Modernization", "link": "/service/data-modernization" },
+        { "name": "Advanced Analytics", "link": "/service/advanced-analytics" },
+        {
+          "name": "Connected Intelligence",
+          "link": "/service/connected-intelligence"
+        },
+        { "name": "Data Management", "link": "/service/data-management" }
+      ]
+    },
+    {
+      "service": "Generative AI",
+      "link": "/",
+      "subservices": []
+    },
+    {
+      "service": "Cloud",
+      "link": "/",
+      "subservices": [
+        {
+          "name": "Cloud Operations & Migration",
+          "link": "/service/cloud-operations-migration"
+        },
+        {
+          "name": "Cloud Application Development & Integration",
+          "link": "/service/cloud-application-development-integration"
+        },
+        { "name": "Managed Services", "link": "/service/managed-services" },
+        {
+          "name": "Digital Infrastructure Services",
+          "link": "/service/digital-infrastructure-services"
+        }
+      ]
+    },
+    {
+      "service": "Security",
+      "link": "/",
+      "subservices": []
+    },
+    {
+      "service": "Emerging Technologies",
+      "link": "/",
+      "subservices": []
+    },
+    {
+      "service": "Business Process Services",
+      "link": "/",
+      "subservices": [
+        { "name": "Contact Center", "link": "/service/contact-center" },
+        { "name": "Digital Marketing", "link": "/service/digital-marketing" },
+        {
+          "name": "Finance & Accounting",
+          "link": "/service/finance-accounting"
+        },
+        { "name": "Staff Augmentation", "link": "/service/staff-augmentation" },
+        {
+          "name": "Legal Process Outsourcing",
+          "link": "/service/legal-process-outsourcing"
+        },
+        {
+          "name": "Recruitment Process Outsourcing",
+          "link": "/service/recruitment-process-outsourcing"
+        }
+      ]
+    }
+  ],
+  "industries": [
+    {
+      "service": "Banking & Financial Services",
+      "link": "/",
+      "subservices": [
+        { "name": "Retail Banking", "link": "/industries/retail-banking" },
+        {
+          "name": "Investment Banking",
+          "link": "/industries/investment-banking"
+        },
+        {
+          "name": "Fintech Integration",
+          "link": "/industries/fintech-integration"
+        }
+      ]
+    },
+    {
+      "service": "Retail & CPG",
+      "link": "/",
+      "subservices": [
+        {
+          "name": "Omnichannel Commerce",
+          "link": "/industries/omnichannel-commerce"
+        },
+        {
+          "name": "Supply Chain Resilience",
+          "link": "/industries/supply-chain-resilience"
+        }
+      ]
+    },
+    {
+      "service": "Healthcare & Life Sciences",
+      "link": "/",
+      "subservices": [
+        {
+          "name": "Patient Care Digitization",
+          "link": "/industries/patient-care-digitization"
+        },
+        {
+          "name": "Data Analytics & Compliance",
+          "link": "/industries/data-analytics-compliance"
+        }
+      ]
+    },
+    {
+      "service": "Telecommunications",
+      "link": "/",
+      "subservices": [
+        {
+          "name": "Network Virtualization",
+          "link": "/industries/network-virtualization"
+        },
+        {
+          "name": "Customer Operations",
+          "link": "/industries/customer-operations"
+        }
+      ]
+    }
+  ],
+  "insights": [
+    {
+      "service": "Resources",
+      "link": "/",
+      "subservices": [
+        { "name": "Blogs", "link": "/insights/blogs" },
+        { "name": "Case Studies", "link": "/insights/case-studies" },
+        {
+          "name": "Whitepapers & eBooks",
+          "link": "/insights/whitepapers-ebooks"
+        },
+        { "name": "Newsroom", "link": "/insights/newsroom" }
+      ]
+    }
+  ],
+  "about": [
+    {
+      "service": "Company Overview",
+      "link": "/",
+      "subservices": [
+        { "name": "Our Philosophy", "link": "/about/our-philosophy" },
+        { "name": "Our Leadership", "link": "/about/our-leadership" },
+        { "name": "Global Presence", "link": "/about/global-presence" }
+      ]
+    },
+    {
+      "service": "Governance & Partners",
+      "link": "/",
+      "subservices": [
+        { "name": "Investor Relations", "link": "/about/investor-relations" },
+        { "name": "Alliances & Partners", "link": "/about/alliances-partners" },
+        { "name": "Accomplishments", "link": "/about/accomplishments" }
+      ]
+    }
+  ]
+}

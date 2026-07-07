@@ -6,7 +6,6 @@ tmp_dir = "tmp"
   args_bin = []
   bin = "./tmp/main"
   cmd = "go build -o ./tmp/main ./cmd/server"
-  delay = 1000
   exclude_dir = ["internal/dist/assets", "tmp", "vendor", "testdata"]
   exclude_file = ["internal/components/**/*.go", "internal/db/queries/*.go", "internal/dist/assets/css/output@dev.css"]
   exclude_regex = ["_test.go"]
@@ -18,8 +17,8 @@ tmp_dir = "tmp"
   include_file = []
   kill_delay = "5s"
   log = "build-errors.log"
-  poll = false
-  poll_interval = 500
+  poll = true
+  poll_interval = 500 # checking every 500ms is perfectly fine
   post_cmd = [
     # https://github.com/cosmtrek/air/issues/534
     "lsof -ti:3000 | xargs -r kill -9",

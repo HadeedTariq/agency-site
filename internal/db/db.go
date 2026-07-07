@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"go-htmx-template/internal/db/queries"
+	"agency-site/internal/db/queries"
 )
 
 type Database interface {

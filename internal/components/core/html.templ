@@ -1,12 +1,14 @@
 package core
 
 import "agency-site/internal/version"
+import "agency-site/internal/types"
+import "agency-site/internal/components/header"
 
-templ HTML(title string, content templ.Component) {
+templ HTML(title string, headerData types.HeaderConfig, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		@head(title)
-		@body(content)
+		@body(headerData,content)
 	</html>
 }
 
@@ -30,15 +32,22 @@ templ head(title string) {
 				{code:".*", swap: false}
 			];
 		</script>
+		 <script nonce={ templ.GetNonce(ctx) } 
+    src="assets/js/alpineJsCsp.js">
+	</script>
 		<link href={ "/assets/css/output@" + version.Value + ".css" } rel="stylesheet"/>
 	</head>
 }
 
-templ body(content templ.Component) {
-	<body class="flex flex-col min-h-screen">
-		<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4">Skip to content</a>
-		<main id="main-content" class="grow">
+templ body(headerData types.HeaderConfig,content templ.Component) {
+		<body class="flex flex-col min-h-screen">
+
+		@header.Header(headerData)
+
+		<main class="grow">
 			@content
 		</main>
+
 	</body>
+
 }

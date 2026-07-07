@@ -12,11 +12,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"go-htmx-template/internal/server/handler"
+	"agency-site/internal/server/handler"
+	"agency-site/internal/types"
 )
 
 func newHomeHandler() *handler.Handler {
-	return handler.New(slog.New(slog.DiscardHandler), nil)
+	return handler.New(slog.New(slog.DiscardHandler), nil, types.HeaderConfig{})
 }
 
 func TestHome_StatusCode(t *testing.T) {

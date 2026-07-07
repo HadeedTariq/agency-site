@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go-htmx-template/internal/server/middleware"
+	"agency-site/internal/server/middleware"
 )
 
 var devIPConfig = middleware.IPConfig{TrustProxyHeaders: false}

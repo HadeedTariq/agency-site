@@ -12,7 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"go-htmx-template/internal/server/handler"
+	"agency-site/internal/server/handler"
+	"agency-site/internal/types"
 )
 
 func TestHealth(t *testing.T) {
@@ -61,7 +62,7 @@ func TestHealth(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			h := handler.New(slog.New(slog.DiscardHandler), nil)
+			h := handler.New(slog.New(slog.DiscardHandler), nil, types.HeaderConfig{})
 			req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/health", nil)
 			rec := httptest.NewRecorder()
 
@@ -75,7 +76,7 @@ func TestHealth(t *testing.T) {
 func TestHealth_NoDatabase(t *testing.T) {
 	t.Parallel()
 	// Handler with nil Database should still work for health check
-	h := handler.New(nil, nil)
+	h := handler.New(nil, nil, types.HeaderConfig{})
 
 	req := httptest.NewRequestWithContext(context.Background(), http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
@@ -90,7 +91,7 @@ func TestHealth_NoDatabase(t *testing.T) {
 
 func TestHealth_MultipleRequests(t *testing.T) {
 	t.Parallel()
-	h := handler.New(slog.New(slog.DiscardHandler), nil)
+	h := handler.New(slog.New(slog.DiscardHandler), nil, types.HeaderConfig{})
 
 	// Health endpoint should be idempotent
 	for range 5 {

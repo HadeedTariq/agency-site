@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go-htmx-template/internal/server/middleware"
+	"agency-site/internal/server/middleware"
 )
 
 // loggingRig wires up the Logging middleware (which wraps responseWriter

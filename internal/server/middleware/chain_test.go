@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go-htmx-template/internal/server/middleware"
+	"agency-site/internal/server/middleware"
 )
 
 func TestChain_Empty(t *testing.T) {

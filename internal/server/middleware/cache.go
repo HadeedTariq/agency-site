@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"go-htmx-template/internal/version"
+	"agency-site/internal/version"
 	"net/http"
 )
 

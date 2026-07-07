@@ -5,16 +5,22 @@ import (
 	"log/slog"
 	"net/http"
 
-	"go-htmx-template/internal/db"
-	"go-htmx-template/internal/dist"
-	"go-htmx-template/internal/server/handler"
-	"go-htmx-template/internal/server/middleware"
-	"go-htmx-template/internal/version"
+	"agency-site/internal/db"
+	"agency-site/internal/dist"
+	"agency-site/internal/server/config"
+	"agency-site/internal/server/handler"
+	"agency-site/internal/server/middleware"
+	"agency-site/internal/version"
 )
 
 // New creates a new router with the given context, logger, database, and rate limit.
 func New(ctx context.Context, logger *slog.Logger, database db.Database, rateLimit int) http.Handler {
-	h := handler.New(logger, database)
+	headerData, err := config.LoadHeader()
+
+	if err != nil {
+		logger.Error("error loading header data: %s", err.Error())
+	}
+	h := handler.New(logger, database, headerData)
 
 	ipCfg := middleware.IPConfig{
 		TrustProxyHeaders: version.Value != "dev",

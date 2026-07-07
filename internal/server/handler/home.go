@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"go-htmx-template/internal/components/core"
-	"go-htmx-template/internal/components/home"
+	"agency-site/internal/components/core"
+	"agency-site/internal/components/home"
 	"net/http"
 	"sync/atomic"
 )
@@ -11,7 +11,7 @@ var counter atomic.Int64 //nolint:gochecknoglobals // demo counter for template
 
 // Home handles the home page.
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
-	h.html(r.Context(), w, http.StatusOK, core.HTML("Example Site", home.Page(int(counter.Load()))))
+	h.html(r.Context(), w, http.StatusOK, core.HTML("Example Site", h.Header, home.Page(int(counter.Load()))))
 }
 
 // Count increments the counter and returns the updated Counter fragment.

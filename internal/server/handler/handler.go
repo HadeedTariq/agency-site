@@ -1,22 +1,25 @@
 package handler
 
 import (
+	"agency-site/internal/db"
+	"agency-site/internal/types"
 	"context"
-	"github.com/a-h/templ"
-	"go-htmx-template/internal/db"
 	"log/slog"
 	"net/http"
+
+	"github.com/a-h/templ"
 )
 
 // Handler handles requests.
 type Handler struct {
 	logger   *slog.Logger
 	database db.Database
+	Header   types.HeaderConfig
 }
 
 // New creates a new Handler.
-func New(logger *slog.Logger, database db.Database) *Handler {
-	return &Handler{logger: logger, database: database}
+func New(logger *slog.Logger, database db.Database, header types.HeaderConfig) *Handler {
+	return &Handler{logger: logger, database: database, Header: header}
 }
 
 func (h *Handler) html(ctx context.Context, w http.ResponseWriter, status int, t templ.Component) {

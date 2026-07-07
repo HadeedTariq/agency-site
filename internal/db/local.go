@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"go-htmx-template/internal/db/queries"
+	"agency-site/internal/db/queries"
 
 	_ "modernc.org/sqlite"
 )

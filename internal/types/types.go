@@ -1,0 +1,21 @@
+package types
+
+type SubItem struct {
+	Name string `json:"name"`
+	Link string `json:"link"`
+}
+
+// NavGroup models a parent drop-down category block
+type NavGroup struct {
+	Service     string    `json:"service"` // Acts as the display name (e.g. "Retail & CPG")
+	Link        string    `json:"link"`
+	SubServices []SubItem `json:"subservices"`
+}
+
+// HeaderConfig groups everything nicely so you can pass it to your HTMX component
+type HeaderConfig struct {
+	Services   []NavGroup `json:"services"`
+	Industries []NavGroup `json:"industries"`
+	Insights   []NavGroup `json:"insights"`
+	About      []NavGroup `json:"about"`
+}
