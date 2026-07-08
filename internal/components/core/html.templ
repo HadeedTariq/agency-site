@@ -2,7 +2,6 @@ package core
 
 import "agency-site/internal/version"
 import "agency-site/internal/types"
-import "agency-site/internal/components/header"
 
 templ HTML(title string, headerData types.HeaderConfig, content templ.Component) {
 	<!DOCTYPE html>
@@ -19,6 +18,10 @@ templ head(title string) {
 		<meta name="color-scheme" content="light dark"/>
 		<meta name="description" content="Hello world"/>
 		<title>{ title }</title>
+		<script
+			defer
+			src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js">
+</script>
 		<script src="/assets/js/htmx@v2.0.7.min.js" nonce={ templ.GetNonce(ctx) }></script>
 		<script nonce={ templ.GetNonce(ctx) }>
 			htmx.config.includeIndicatorStyles = false;
@@ -32,17 +35,12 @@ templ head(title string) {
 				{code:".*", swap: false}
 			];
 		</script>
-		 <script nonce={ templ.GetNonce(ctx) } 
-    src="assets/js/alpineJsCsp.js">
-	</script>
 		<link href={ "/assets/css/output@" + version.Value + ".css" } rel="stylesheet"/>
 	</head>
 }
 
-templ body(headerData types.HeaderConfig,content templ.Component) {
+templ body(headerData types.HeaderConfig, content templ.Component) {
 		<body class="flex flex-col min-h-screen">
-
-		@header.Header(headerData)
 
 		<main class="grow">
 			@content

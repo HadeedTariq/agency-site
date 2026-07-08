@@ -4,6 +4,7 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
+  delay = 1000
   bin = "./tmp/main"
   cmd = "go build -o ./tmp/main ./cmd/server"
   exclude_dir = ["internal/dist/assets", "tmp", "vendor", "testdata"]
@@ -18,7 +19,7 @@ tmp_dir = "tmp"
   kill_delay = "5s"
   log = "build-errors.log"
   poll = true
-  poll_interval = 500 # checking every 500ms is perfectly fine
+  poll_interval = 2000 # checking every 500ms is perfectly fine
   post_cmd = [
     # https://github.com/cosmtrek/air/issues/534
     "lsof -ti:3000 | xargs -r kill -9",
@@ -26,9 +27,9 @@ tmp_dir = "tmp"
   pre_cmd = [
     "lsof -ti:3000 | xargs -r kill -9",
     "go tool templ generate -path ./internal/components",
-    "go tool go-tw -i ./styles/input.css -o ./internal/dist/assets/css/output@dev.css",
-    "go tool sqlc generate",
-    "./migrate.sh -p sqlite -u \"${DB_URL:-./db.sqlite3}\"",
+    # "go tool go-tw -i ./styles/input.css -o ./internal/dist/assets/css/output@dev.css",
+    # "go tool sqlc generate",
+    # "./migrate.sh -p sqlite -u \"${DB_URL:-./db.sqlite3}\"",
   ]
   rerun = true
   rerun_delay = 500

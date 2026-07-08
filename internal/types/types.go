@@ -19,3 +19,9 @@ type HeaderConfig struct {
 	Insights   []NavGroup `json:"insights"`
 	About      []NavGroup `json:"about"`
 }
+
+type TodoItem struct {
+	Id        int    `json:"id"`
+	Content   string `json:"content"`
+	Completed bool   `json:"completed"`
+}

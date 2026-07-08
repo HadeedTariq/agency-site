@@ -32,7 +32,8 @@ func New(ctx context.Context, logger *slog.Logger, database db.Database, rateLim
 	mux.HandleFunc(newPath(http.MethodGet, "/health"), h.Health)
 	mux.Handle(newPath(http.MethodGet, "/assets/"), middleware.CacheMiddleware(http.FileServer(http.FS(dist.AssetsDir))))
 	mux.HandleFunc(newPath(http.MethodGet, "/{$}"), h.Home)
-	mux.HandleFunc(newPath(http.MethodPost, "/count"), h.Count)
+	mux.HandleFunc(newPath(http.MethodPost, "/add-todo"), h.AddTodo)
+	mux.HandleFunc(newPath(http.MethodPost, "/complete-todo"), h.CompleteTodo)
 
 	// Middleware chain
 	hdlr := http.Handler(mux)
@@ -41,7 +42,7 @@ func New(ctx context.Context, logger *slog.Logger, database db.Database, rateLim
 			http.Error(w, "500 Internal Server Error", http.StatusInternalServerError)
 		})),
 		middleware.Logging(logger, ipCfg),
-		middleware.Security(logger, ipCfg),
+		// middleware.Security(logger, ipCfg),
 		middleware.RateLimit(ctx, logger, rateLimit, middleware.DefaultMaxEntries, ipCfg),
 		middleware.CSRF(logger, ipCfg),
 	)(hdlr)
