@@ -1,0 +1,40 @@
+package hero
+
+import "github.com/templui/templui/components/carousel"
+import "github.com/templui/templui/components/card"
+
+templ CarouselDefault() {
+	@carousel.Carousel(carousel.Props{
+		Class: "rounded-md",
+	}) {
+		@carousel.Content() {
+			@carousel.Item() {
+				@CarouselSlide("Slide 1", "This is the first slide")
+			}
+			@carousel.Item() {
+				@CarouselSlide("Slide 2", "This is the second slide")
+			}
+			@carousel.Item() {
+				@CarouselSlide("Slide 3", "This is the third slide")
+			}
+		}
+		@carousel.Previous()
+		@carousel.Next()
+		@carousel.Indicators(carousel.IndicatorsProps{
+			Count: 3,
+		})
+	}
+}
+
+templ CarouselSlide(title, description string) {
+	@card.Card() {
+		@card.Content() {
+			<div class={ "w-full h-96 flex items-center justify-center" }>
+				<div class="text-center">
+					<h2 class="text-3xl font-bold mb-2">{ title }</h2>
+					<p class="text-xl">{ description }</p>
+				</div>
+			</div>
+		}
+	}
+}

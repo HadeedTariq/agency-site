@@ -20,8 +20,18 @@ type HeaderConfig struct {
 	About      []NavGroup `json:"about"`
 }
 
-type TodoItem struct {
-	Id        int    `json:"id"`
-	Content   string `json:"content"`
-	Completed bool   `json:"completed"`
+type MediaType string
+
+const (
+	MediaImage MediaType = "image"
+	MediaVideo MediaType = "video"
+)
+
+type HeroData struct {
+	Title       string
+	Description string
+	ButtonText  string
+	ButtonURL   string
+	MediaURL    string
+	MediaType   MediaType
 }

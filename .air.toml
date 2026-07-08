@@ -27,7 +27,7 @@ tmp_dir = "tmp"
   pre_cmd = [
     "lsof -ti:3000 | xargs -r kill -9",
     "go tool templ generate -path ./internal/components",
-    # "go tool go-tw -i ./styles/input.css -o ./internal/dist/assets/css/output@dev.css",
+    "go tool go-tw -i ./styles/input.css -o ./internal/dist/assets/css/output@dev.css",
     # "go tool sqlc generate",
     # "./migrate.sh -p sqlite -u \"${DB_URL:-./db.sqlite3}\"",
   ]
