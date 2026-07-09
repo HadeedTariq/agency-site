@@ -3,6 +3,7 @@ module agency-site
 go 1.26.3
 
 require (
+	github.com/Oudwins/tailwind-merge-go v0.2.0
 	github.com/a-h/templ v0.3.1020
 	github.com/joho/godotenv v1.5.1
 	github.com/playwright-community/playwright-go v0.5700.1
@@ -15,7 +16,6 @@ require (
 require (
 	cel.dev/expr v0.25.2 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
-	github.com/Oudwins/tailwind-merge-go v0.2.0 // indirect
 	github.com/Piszmog/go-tw v1.1.0 // indirect
 	github.com/a-h/parse v0.0.0-20250122154542-74294addb73e // indirect
 	github.com/andybalholm/brotli v1.2.1 // indirect

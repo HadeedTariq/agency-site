@@ -1,38 +1,77 @@
 package hero
 
-import "github.com/templui/templui/components/carousel"
-import "github.com/templui/templui/components/card"
+import (
+	"agency-site/internal/components/ui/card"
+	"agency-site/internal/components/ui/carousel"
+	"agency-site/internal/types"
+)
 
-templ CarouselDefault() {
+templ CarouselDefault(carouselData []types.HeroData) {
 	@carousel.Carousel(carousel.Props{
-		Class: "rounded-md",
+		Class:    "w-full mx-auto rounded-xl overflow-hidden shadow-2xl relative h-[90vh]",
+		Loop:     true,
+		Autoplay: true,
+		Interval: 3000,
 	}) {
 		@carousel.Content() {
-			@carousel.Item() {
-				@CarouselSlide("Slide 1", "This is the first slide")
-			}
-			@carousel.Item() {
-				@CarouselSlide("Slide 2", "This is the second slide")
-			}
-			@carousel.Item() {
-				@CarouselSlide("Slide 3", "This is the third slide")
+			for _, slide := range carouselData {
+				@carousel.Item() {
+					@CarouselSlide(slide)
+				}
 			}
 		}
 		@carousel.Previous()
 		@carousel.Next()
 		@carousel.Indicators(carousel.IndicatorsProps{
-			Count: 3,
+			Count: len(carouselData),
 		})
 	}
 }
 
-templ CarouselSlide(title, description string) {
-	@card.Card() {
-		@card.Content() {
-			<div class={ "w-full h-96 flex items-center justify-center" }>
-				<div class="text-center">
-					<h2 class="text-3xl font-bold mb-2">{ title }</h2>
-					<p class="text-xl">{ description }</p>
+// CarouselSlide handles layout structuring, dynamic video detection, and button injection
+templ CarouselSlide(slide types.HeroData) {
+	@card.Card(card.Props{Class: "border-0 p-0 m-0 overflow-hidden relative rounded-none"}) {
+		@card.Content(card.ContentProps{Class: "p-0 m-0"}) {
+			<div class="w-full h-[90vh] relative flex items-center justify-center bg-gray-900 overflow-hidden">
+				<div class="absolute inset-0 w-full h-full z-0 select-none pointer-events-none">
+					if slide.MediaType == types.MediaVideo {
+						<video
+							src={ slide.MediaURL }
+							autoplay
+							loop
+							muted
+							playsinline
+							class="w-full h-full object-cover transform scale-105"
+						></video>
+					} else {
+						<img
+							src={ slide.MediaURL }
+							alt={ slide.Title }
+							class="w-full h-full object-cover"
+						/>
+					}
+					<div class="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-gray-900/40 to-gray-950/40"></div>
+				</div>
+				<div class="relative z-10 text-center max-w-2xl px-6 md:px-12 flex flex-col items-center space-y-6">
+					<h2 class="text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-md animate-fade-in">
+						{ slide.Title }
+					</h2>
+					<p class="text-lg md:text-xl text-gray-200 font-medium drop-shadow-sm leading-relaxed max-w-xl">
+						{ slide.Description }
+					</p>
+					if slide.ButtonText != "" && slide.ButtonURL != "" {
+						<div class="pt-2">
+							<a
+								href={ templ.SafeURL(slide.ButtonURL) }
+								class="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+							>
+								<span>{ slide.ButtonText }</span>
+								<svg class="w-4 h-4 ml-2 transition-transform duration-200 transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+								</svg>
+							</a>
+						</div>
+					}
 				</div>
 			</div>
 		}

@@ -1,0 +1,26 @@
+[
+  {
+    "Title": "Building Digital Solutions That Drive Business Growth",
+    "Description": "We design, develop, and scale modern web applications, mobile apps, and enterprise software that help businesses innovate, automate, and grow with confidence.",
+    "ButtonText": "Get Started",
+    "ButtonURL": "",
+    "MediaURL": "/assets/media/home-carousel.mp4",
+    "MediaType": "video"
+  },
+  {
+    "Title": "Custom Software Engineered for Your Business",
+    "Description": "From internal business systems to customer-facing platforms, our team builds secure, scalable, and high-performance software tailored to your unique requirements.",
+    "ButtonText": "Explore Services",
+    "ButtonURL": "",
+    "MediaURL": "/assets/media/home-carousel-image-1.avif",
+    "MediaType": "image"
+  },
+  {
+    "Title": "Accelerate Your Digital Transformation Journey",
+    "Description": "Leverage cloud technologies, automation, and modern engineering practices to improve efficiency, reduce operational costs, and prepare your business for the future.",
+    "ButtonText": "Contact Us",
+    "ButtonURL": "",
+    "MediaURL": "/assets/media/home-carousel-image-2.avif",
+    "MediaType": "image"
+  }
+]

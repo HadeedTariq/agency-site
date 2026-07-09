@@ -1,5 +1,8 @@
 package home
 
-templ Page() {
-	
+import "agency-site/internal/types"
+import "agency-site/internal/components/home/hero-section"
+
+templ Page(carouselData []types.HeroData) {
+    @hero.CarouselDefault(carouselData)
 }
