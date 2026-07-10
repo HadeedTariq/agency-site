@@ -41,7 +41,7 @@ templ head(title string) {
 }
 
 templ body(headerData types.HeaderConfig, displayHeader bool, content templ.Component) {
-	<body class="flex flex-col min-h-screen">
+	<body class="flex flex-col min-h-screen bg-slate-50 text-slate-900 antialiased">
 		<main class="grow">
 			@header.Header(headerData)
 			@content

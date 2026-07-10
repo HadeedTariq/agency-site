@@ -1,10 +1,10 @@
 package db
 
 import (
+	"agency-site/internal/db/queries"
 	"context"
 	"database/sql"
 	"fmt"
-	"agency-site/internal/db/queries"
 )
 
 type Database interface {
@@ -21,5 +21,6 @@ func New(url string) (Database, error) {
 	if err = db.DB().PingContext(context.Background()); err != nil {
 		return nil, fmt.Errorf("pinging database: %w", err)
 	}
+
 	return db, nil
 }
