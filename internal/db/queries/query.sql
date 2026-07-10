@@ -91,3 +91,18 @@ INSERT INTO insights (
     ?, ?, ?, ?, ?, ?, ?, ?, ?
 )
 RETURNING *;
+-- name: GetNewsRoomDetails :one
+SELECT *
+FROM insights
+WHERE slug = sqlc.arg(slug)
+  AND category = 'NEWSROOM';
+-- name: GetBlogDetails :one
+SELECT *
+FROM insights
+WHERE slug = sqlc.arg(slug)
+  AND category = 'BLOG';
+-- name: GetCaseStudyDetails :one
+SELECT *
+FROM insights
+WHERE slug = sqlc.arg(slug)
+  AND category = 'CASE_STUDY';
