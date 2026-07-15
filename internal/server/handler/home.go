@@ -11,6 +11,8 @@ import (
 // Home handles the home page.
 func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 	carouselData, _ := config.LoadCarousel()
+	advantageData, _ := config.LoadAdvantages()
+	testimonialData, _ := config.LoadTestimonial()
 
 	insights, err := queries.New(h.database.DB()).GetHomePageInsights(r.Context())
 	if err != nil {
@@ -25,7 +27,7 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 			"System Limited",
 			h.Header,
 			true,
-			home.Page(carouselData, insights),
+			home.Page(carouselData, insights, advantageData, testimonialData),
 		),
 	)
 }

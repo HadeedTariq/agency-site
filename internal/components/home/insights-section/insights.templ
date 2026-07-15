@@ -3,6 +3,7 @@ package insights
 import (
 	"agency-site/internal/db/queries"
 	"fmt"
+	"strings"
 )
 
 templ HomePageInsights(insightsData []queries.GetHomePageInsightsRow) {
@@ -91,7 +92,7 @@ templ InsightCard(item queries.GetHomePageInsightsRow) {
 				</h3>
 			</div>
 			<a
-				href={ templ.SafeURL(fmt.Sprintf("/insights/%s", item.Slug)) }
+				href={ templ.SafeURL(fmt.Sprintf("/%s/%s", strings.ToLower(item.Category), item.Slug)) }
 				hx-boost="true"
 				class="group/btn inline-flex items-center justify-between border-t border-white/20 pt-6"
 			>

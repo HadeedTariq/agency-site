@@ -1,0 +1,55 @@
+package advantages
+
+import "agency-site/internal/types"
+
+templ AdvantagesGrid(advantages []types.AdvantageData) {
+	<section
+		x-data="{
+			scrollProgress: 0,
+			init() {
+				window.addEventListener('scroll', () => {
+					const track = this.$refs.track;
+					const rect = track.getBoundingClientRect();
+					const trackHeight = rect.height - window.innerHeight;
+					
+					if (trackHeight <= 0) return;
+					
+					// Calculate progress from 0 (top of section) to 1 (bottom of section)
+					let progress = -rect.top / trackHeight;
+					this.scrollProgress = Math.max(0, Math.min(1, progress));
+				});
+			}
+		}"
+		x-ref="track"
+		class="relative h-[300vh] text-black"
+	>
+		<div class="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden px-6 sm:px-12 lg:px-24">
+			<div class="max-w-6xl w-full mx-auto mb-12 text-center lg:text-left shrink-0">
+				<h2 class="text-xs font-semibold tracking-widest text-indigo-400 uppercase">
+					Our Impact
+				</h2>
+				<p class="mt-2 text-3xl font-bold tracking-tight text-black sm:text-4xl">
+					Why companies choose to partner with us
+				</p>
+			</div>
+			<div class="max-w-6xl w-full mx-auto relative">
+				<div
+					class="flex gap-8 transition-transform duration-75 ease-out will-change-transform"
+					:style="`transform: translateX(calc(-${scrollProgress * 100}% + ${scrollProgress * 32}rem))`"
+				>
+					for _, item := range advantages {
+						<div class="group flex flex-col items-start pt-6 pb-8 pr-8 w-[85vw] sm:w-[45vw] md:w-[30vw] shrink-0 outline-none">
+							<div class="w-full h-[4px] bg-[#a100ff] mb-6 rounded-full origin-left transition-transform duration-500 group-hover:scale-x-110"></div>
+							<span class="text-8xl lg:text-9xl font-thin tracking-tight text-[#a100ff] transition-transform duration-300 group-hover:scale-105 select-none">
+								{ item.Title }
+							</span>
+							<p class="mt-4 text-left text-base lg:text-lg font-normal leading-relaxed text-[#212529] group-hover:text-black">
+								{ item.Content }
+							</p>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+}

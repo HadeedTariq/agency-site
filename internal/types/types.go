@@ -35,3 +35,12 @@ type HeroData struct {
 	MediaURL    string
 	MediaType   MediaType
 }
+
+type AdvantageData struct {
+	Title   string
+	Content string
+}
+type TestimonialData struct {
+	Title string
+	Image string
+}

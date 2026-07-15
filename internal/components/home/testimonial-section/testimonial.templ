@@ -1,0 +1,73 @@
+package testimonial
+
+import "agency-site/internal/types"
+import "strconv"
+
+templ TestimonialCarousel(testimonials []types.TestimonialData) {
+	<section class="bg-slate-50 py-24 overflow-hidden font-['Plus_Jakarta_Sans']">
+		<div class="max-w-6xl mx-auto px-6 sm:px-12">
+			<div class="text-center mb-16">
+				<h2 class="text-xs font-semibold tracking-widest text-[#a100ff] uppercase">
+					Testimonials
+				</h2>
+				<p class="mt-2 text-3xl font-bold tracking-tight text-[#212529] sm:text-4xl">
+					What our partners say about us
+				</p>
+			</div>
+			<div
+				x-data={ "{ active: 1, total: " + strconv.Itoa(len(testimonials)) + " }" }
+				x-init="
+					setInterval(() => {
+						active = (active + 1) % total;
+					}, 3500);
+				"
+				class="relative w-full flex flex-col items-center"
+			>
+				<div class="w-full overflow-visible py-12 flex justify-center items-center">
+					<div
+						class="flex gap-6 sm:gap-10 transition-transform duration-700 ease-out will-change-transform"
+						:style="`transform: translateX(calc(-${active * (280 + 40)}px + 50vw - ${(280 / 2) + 20}px))`"
+					>
+						for index, item := range testimonials {
+							<div
+								class="w-[280px] shrink-0 flex flex-col items-center text-center transition-all duration-700 ease-out"
+								:class={ "active === " + strconv.Itoa(index) + " ? 'scale-110 opacity-100' : 'scale-90 opacity-40'" }
+							>
+								<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-[#a100ff] shadow-lg mb-6">
+									if item.Image != "" {
+										<img
+											src={ item.Image }
+											alt={ item.Title }
+											class="w-full h-full object-cover"
+										/>
+									} else {
+										<div class="w-full h-full bg-slate-200 flex items-center justify-center text-slate-400">
+											<svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+										</div>
+									}
+								</div>
+								<div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full min-h-[140px] flex flex-col justify-center">
+									<span class="text-3xl text-[#a100ff]/30 font-serif leading-none select-none">“</span>
+									<p class="text-base font-medium text-[#212529] leading-relaxed line-clamp-3">
+										{ item.Title }
+									</p>
+									<span class="text-3xl text-[#a100ff]/30 font-serif leading-none select-none self-end -mt-2">”</span>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+				<div class="flex space-x-2 mt-8">
+					for index := range testimonials {
+						<button
+							@click={ "active = " + strconv.Itoa(index) }
+							class="h-2 rounded-full transition-all duration-300"
+							:class={ "active === " + strconv.Itoa(index) + " ? 'w-6 bg-[#a100ff]' : 'w-2 bg-slate-300 hover:bg-[#a100ff]/50'" }
+							aria-label={ "Go to slide " + strconv.Itoa(index+1) }
+						></button>
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+}

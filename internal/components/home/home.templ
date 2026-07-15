@@ -2,10 +2,14 @@ package home
 
 import "agency-site/internal/types"
 import "agency-site/internal/components/home/hero-section"
+import "agency-site/internal/components/home/advantage-section"
 import "agency-site/internal/db/queries"
 import "agency-site/internal/components/home/insights-section"
+import "agency-site/internal/components/home/testimonial-section"
 
-templ Page(carouselData []types.HeroData, insightsData []queries.GetHomePageInsightsRow) {
+templ Page(carouselData []types.HeroData, insightsData []queries.GetHomePageInsightsRow, advantageData []types.AdvantageData, testimonialData []types.TestimonialData) {
 	@hero.CarouselDefault(carouselData)
 	@insights.HomePageInsights(insightsData)
+	@advantages.AdvantagesGrid(advantageData)
+	@testimonial.TestimonialCarousel(testimonialData)
 }

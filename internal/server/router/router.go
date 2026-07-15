@@ -33,6 +33,8 @@ func New(ctx context.Context, logger *slog.Logger, database db.Database, rateLim
 	mux.Handle(newPath(http.MethodGet, "/assets/"), middleware.CacheMiddleware(http.FileServer(http.FS(dist.AssetsDir))))
 	mux.HandleFunc(newPath(http.MethodGet, "/{$}"), h.Home)
 	mux.HandleFunc(newPath(http.MethodGet, "/newsroom/{slug}"), h.NewsRoomDetails)
+	mux.HandleFunc(newPath(http.MethodGet, "/blog/{slug}"), h.BlogDetails)
+	mux.HandleFunc(newPath(http.MethodGet, "/case_study/{slug}"), h.CaseStudyDetails)
 
 	// Middleware chain
 	hdlr := http.Handler(mux)
