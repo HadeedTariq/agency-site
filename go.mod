@@ -6,6 +6,7 @@ require (
 	github.com/Oudwins/tailwind-merge-go v0.2.0
 	github.com/a-h/templ v0.3.1020
 	github.com/brianvoe/gofakeit/v7 v7.15.0
+	github.com/getsentry/sentry-go v0.48.0
 	github.com/joho/godotenv v1.5.1
 	github.com/playwright-community/playwright-go v0.5700.1
 	github.com/stretchr/testify v1.11.1

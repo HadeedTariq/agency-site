@@ -11,5 +11,7 @@ templ Page(carouselData []types.HeroData, insightsData []queries.GetHomePageInsi
 	@hero.CarouselDefault(carouselData)
 	@insights.HomePageInsights(insightsData)
 	@advantages.AdvantagesGrid(advantageData)
+	if len(testimonialData) > 0 {
 	@testimonial.TestimonialCarousel(testimonialData)
+	}
 }

@@ -7,11 +7,15 @@ import (
 	"log/slog"
 	"os"
 	"strconv"
+	"time"
 
 	"agency-site/internal/db"
 	"agency-site/internal/log"
 	"agency-site/internal/server"
 	"agency-site/internal/server/router"
+
+	sentry "github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 
 	"github.com/joho/godotenv"
 )
@@ -37,6 +41,20 @@ func main() {
 }
 
 func run(logger *slog.Logger) error {
+	sentryDsn := envOrDefault("SENTRY_DSN", "")
+
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:         sentryDsn,
+		Environment: "development",
+		Release:     "v1.0.0",
+	})
+
+	if err != nil {
+		return err
+	}
+
+	defer sentry.Flush(2 * time.Second)
+
 	database, err := openDatabase()
 	if err != nil {
 		return err
@@ -56,10 +74,14 @@ func run(logger *slog.Logger) error {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	sentryHandler := sentryhttp.New(
+		sentryhttp.Options{},
+	)
+
 	svr := server.New(
 		logger,
 		":"+port,
-		server.WithRouter(router.New(ctx, logger, database, rateLimit)),
+		server.WithRouter(sentryHandler.Handle(router.New(ctx, logger, database, rateLimit))),
 	)
 
 	return svr.StartAndWait()

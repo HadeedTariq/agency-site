@@ -5,15 +5,25 @@ import "agency-site/internal/types"
 import "agency-site/internal/components/core/header"
 import "agency-site/internal/components/ui/carousel"
 
-templ HTML(title string, headerData types.HeaderConfig, displayHeader bool, content templ.Component) {
+templ HTML(title string, sentryDsn string, headerData types.HeaderConfig, displayHeader bool, content templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
-		@head(title)
+		@head(title, sentryDsn)
 		@body(headerData, displayHeader, content)
 	</html>
 }
 
-templ head(title string) {
+script initSentry(dsn string) {
+    Sentry.init({
+        dsn: dsn,
+        environment: "development",
+        release: "agency-site@1.0.0",
+        tracesSampleRate: 0.2,
+        replaysOnErrorSampleRate: 1.0,
+    });
+}
+
+templ head(title string, sentryDSN string) {
 	<head>
 		<meta charset="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -38,6 +48,51 @@ templ head(title string) {
 			];
 		</script>
 		<link href={ "/assets/css/output@" + version.Value + ".css" } rel="stylesheet"/>
+		<script src="https://browser.sentry-cdn.com/10.10.0/bundle.tracing.min.js" crossorigin="anonymous">
+	</script>
+		@initSentry(sentryDSN)
+		// <script nonce={ templ.GetNonce(ctx) }>
+		// 	document.body.addEventListener(
+		// 		"htmx:responseError",
+		// 		function(event){
+		// 			Sentry.captureMessage(
+		// 				"HTMX Response Error",
+		// 				{
+		// 					level:"error",
+		// 					extra:{
+		// 						status:event.detail.xhr.status,
+		// 						url:event.detail.pathInfo.requestPath,
+		// 						response:event.detail.xhr.responseText
+		// 					}
+		// 				}
+		// 			);
+		// 		}
+		// 	);
+		// 	document.body.addEventListener(
+		// 		"htmx:sendError",
+		// 		function(event){
+		// 			Sentry.captureException(
+		// 				new Error("HTMX Send Error")
+		// 			);
+		// 		}
+		// 	);
+		// 	document.body.addEventListener(
+		// 		"htmx:swapError",
+		// 		function(event){
+		// 			Sentry.captureException(
+		// 				new Error("HTMX Swap Error")
+		// 			);
+		// 		}
+		// 	);
+		// 	document.body.addEventListener(
+		// 		"htmx:targetError",
+		// 		function(event){
+		// 			Sentry.captureException(
+		// 				new Error("HTMX Target Error")
+		// 			);
+		// 		}
+		// 	);
+		// </script>
 	</head>
 }
 

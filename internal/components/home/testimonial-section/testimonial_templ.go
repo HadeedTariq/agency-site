@@ -9,7 +9,18 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "agency-site/internal/types"
-import "strconv"
+import "fmt"
+
+func prepareTestimonials(in []types.TestimonialData) []types.TestimonialData {
+	out := in
+	if len(out) == 0 {
+		return out
+	}
+	for len(out) < 7 {
+		out = append(out, in...)
+	}
+	return out
+}
 
 func TestimonialCarousel(testimonials []types.TestimonialData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -32,135 +43,228 @@ func TestimonialCarousel(testimonials []types.TestimonialData) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"bg-slate-50 py-24 overflow-hidden font-['Plus_Jakarta_Sans']\"><div class=\"max-w-6xl mx-auto px-6 sm:px-12\"><div class=\"text-center mb-16\"><h2 class=\"text-xs font-semibold tracking-widest text-[#a100ff] uppercase\">Testimonials</h2><p class=\"mt-2 text-3xl font-bold tracking-tight text-[#212529] sm:text-4xl\">What our partners say about us</p></div><div x-data=\"")
+		safeList := prepareTestimonials(testimonials)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"py-24 bg-slate-50 overflow-hidden font-sans select-none\"><div class=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8\"><div class=\"text-center max-w-2xl mx-auto mb-16\"><h2 class=\"text-xs font-bold tracking-widest text-indigo-600 uppercase\">Partner Testimonials</h2><p class=\"mt-2 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl\">What our partners say about us</p><p class=\"mt-4 text-lg text-slate-500\">Discover how we've helped companies drive revolution and achieve continuous excellence across the globe.</p></div><div x-data=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue("{ active: 1, total: " + strconv.Itoa(len(testimonials)) + " }")
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf(`{
+						active: 0,
+						total: %d,
+						originalTotal: %d,
+						windowWidth: 1024,
+						interval: null,
+						touchStartX: 0,
+						
+						init() {
+							this.windowWidth = window.innerWidth;
+							this.startAutoplay();
+						},
+						startAutoplay() {
+							if (this.interval) clearInterval(this.interval);
+							this.interval = setInterval(() => { this.next(); }, 3500);
+						},
+						pauseAutoplay() {
+							clearInterval(this.interval);
+						},
+						next() {
+							if (this.total === 0) return;
+							this.active = (this.active + 1) %% this.total;
+						},
+						prev() {
+							if (this.total === 0) return;
+							this.active = (this.active - 1 + this.total) %% this.total;
+						},
+						goToReal(targetRealIndex) {
+							if (this.originalTotal === 0) return;
+							let currentRealIndex = this.active %% this.originalTotal;
+							let diff = targetRealIndex - currentRealIndex;
+							
+							// Compute shortest path jump
+							let half = this.originalTotal / 2;
+							if (diff > half) diff -= this.originalTotal;
+							if (diff < -half) diff += this.originalTotal;
+							
+							this.active = (this.active + diff + this.total) %% this.total;
+						},
+						getDiff(index) {
+							let diff = index - this.active;
+							let half = this.total / 2;
+							if (diff > half) diff -= this.total;
+							if (diff < -half) diff += this.total;
+							return diff;
+						},
+						getStyle(index) {
+							let diff = this.getDiff(index);
+							let abs = Math.abs(diff);
+							
+							let isMobile = this.windowWidth < 768;
+							let isTablet = this.windowWidth >= 768 && this.windowWidth < 1024;
+							
+							// X-Axis Offset Step per card
+							let offsetBase = isMobile ? 340 : (isTablet ? 230 : 260); 
+							let translateX = diff * offsetBase;
+							
+							// Layout variables
+							let scale = 1;
+							let opacity = 1;
+							let translateY = 0;
+							let blur = 0;
+							let shadow = '0 25px 50px -12px rgba(0,0,0,0.25)';
+							
+							// Math-driven layout conditions requested
+							if (abs === 0) {
+								scale = 1;
+								opacity = 1;
+								translateY = -10;
+							} else if (abs === 1) {
+								scale = 0.88;
+								opacity = isMobile ? 0 : 0.65;
+								shadow = '0 10px 15px -3px rgba(0,0,0,0.1)';
+							} else if (abs === 2) {
+								scale = 0.72;
+								opacity = (isMobile || isTablet) ? 0 : 0.25;
+								blur = 4;
+								shadow = '0 4px 6px -1px rgba(0,0,0,0.1)';
+							} else {
+								// Hidden off-screen loop cards
+								scale = 0.5;
+								opacity = 0;
+								blur = 8;
+								shadow = 'none';
+							}
+							
+							return 'transform: translateX(' + translateX + 'px) translateY(' + translateY + 'px) scale(' + scale + '); ' +
+								   'opacity: ' + opacity + '; ' +
+								   'filter: blur(' + blur + 'px); ' +
+								   'z-index: ' + (this.total - abs) + '; ' +
+								   'box-shadow: ' + shadow + ';';
+						}
+					}`, len(safeList), len(testimonials)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 18, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 125, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" x-init=\"\r\n\t\t\t\t\tsetInterval(() => {\r\n\t\t\t\t\t\tactive = (active + 1) % total;\r\n\t\t\t\t\t}, 3500);\r\n\t\t\t\t\" class=\"relative w-full flex flex-col items-center\"><div class=\"w-full overflow-visible py-12 flex justify-center items-center\"><div class=\"flex gap-6 sm:gap-10 transition-transform duration-700 ease-out will-change-transform\" :style=\"`transform: translateX(calc(-${active * (280 + 40)}px + 50vw - ${(280 / 2) + 20}px))`\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" @resize.window.debounce.100ms=\"windowWidth = window.innerWidth\" @mouseenter=\"pauseAutoplay\" @mouseleave=\"startAutoplay\" @touchstart=\"touchStartX = $event.changedTouches[0].screenX\" @touchend=\"\r\n\t\t\t\t\t\tlet touchEndX = $event.changedTouches[0].screenX;\r\n\t\t\t\t\t\tif (touchStartX - touchEndX > 50) next();\r\n\t\t\t\t\t\tif (touchEndX - touchStartX > 50) prev();\r\n\t\t\t\t\t\" class=\"relative w-full\"><div class=\"relative w-full h-[520px] flex items-center justify-center perspective-[1200px] overflow-hidden\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for index, item := range testimonials {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"w-[280px] shrink-0 flex flex-col items-center text-center transition-all duration-700 ease-out\" :class=\"")
+		for index, item := range safeList {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"absolute top-1/2 left-1/2 w-[320px] -ml-[160px] -mt-[250px] h-[500px] bg-white rounded-[24px] overflow-hidden flex flex-col transition-all duration-700 ease-in-out will-change-transform cursor-pointer\" :style=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue("active === " + strconv.Itoa(index) + " ? 'scale-110 opacity-100' : 'scale-90 opacity-40'")
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("getStyle(%d)", index))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 34, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 141, Col: 50}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><div class=\"w-32 h-32 rounded-full overflow-hidden border-4 border-[#a100ff] shadow-lg mb-6\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" @click=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("active = %d", index))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 142, Col: 49}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\"><div class=\"w-full h-[300px] shrink-0 bg-slate-100 overflow-hidden relative border-b border-slate-100/50\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			if item.Image != "" {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<img src=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(item.Image)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 39, Col: 27}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\" alt=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<img src=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(item.Title)
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(item.Image)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 40, Col: 27}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 147, Col: 26}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" class=\"w-full h-full object-cover\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" alt=\"Partner\" class=\"w-full h-full object-cover select-none pointer-events-none\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			} else {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-full h-full bg-slate-200 flex items-center justify-center text-slate-400\"><svg class=\"w-12 h-12\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z\"></path></svg></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div class=\"w-full h-full bg-slate-200 flex items-center justify-center text-slate-400\"><svg class=\"w-16 h-16 opacity-50\" fill=\"currentColor\" viewBox=\"0 0 24 24\"><path d=\"M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z\"></path></svg></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"bg-white p-6 rounded-2xl shadow-sm border border-slate-100 w-full min-h-[140px] flex flex-col justify-center\"><span class=\"text-3xl text-[#a100ff]/30 font-serif leading-none select-none\">“</span><p class=\"text-base font-medium text-[#212529] leading-relaxed line-clamp-3\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><div class=\"p-6 flex flex-col grow bg-white\"><p class=\"text-sm text-slate-700 leading-relaxed font-medium line-clamp-3\">\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(item.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 52, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 159, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</p><span class=\"text-3xl text-[#a100ff]/30 font-serif leading-none select-none self-end -mt-2\">”</span></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"</p><div class=\"mt-auto pt-4 flex items-center justify-between opacity-80\"><span class=\"text-xs font-bold text-slate-900 uppercase tracking-wide\">Partner Highlight</span> <svg class=\"w-5 h-5 text-indigo-500\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div><div class=\"flex space-x-2 mt-8\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><div class=\"flex flex-col sm:flex-row items-center justify-center mt-6 gap-6 sm:gap-12\"><button @click=\"prev()\" class=\"w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:scale-110 active:scale-95 z-20\" aria-label=\"Previous testimonial\">❮</button><div class=\"flex space-x-3 items-center z-20\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for index := range testimonials {
+		for i := 0; i < len(testimonials); i++ {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<button @click=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue("active = " + strconv.Itoa(index))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("goToReal(%d)", i))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 63, Col: 49}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 180, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"h-2 rounded-full transition-all duration-300\" :class=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" :class=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue("active === " + strconv.Itoa(index) + " ? 'w-6 bg-[#a100ff]' : 'w-2 bg-slate-300 hover:bg-[#a100ff]/50'")
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("(active %% originalTotal) === %d ? 'w-8 bg-indigo-600' : 'w-2.5 bg-slate-300 hover:bg-indigo-400'", i))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 65, Col: 120}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 181, Col: 132}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" aria-label=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "\" class=\"h-2.5 rounded-full transition-all duration-500 focus:outline-none\" aria-label=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue("Go to slide " + strconv.Itoa(index+1))
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("Go to testimonial %d", i+1))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 66, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `home/testimonial-section/testimonial.templ`, Line: 183, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -171,7 +275,7 @@ func TestimonialCarousel(testimonials []types.TestimonialData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "</div><button @click=\"next()\" class=\"w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 hover:scale-110 active:scale-95 z-20\" aria-label=\"Next testimonial\">❯</button></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
