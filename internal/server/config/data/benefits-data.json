@@ -1,0 +1,20 @@
+[
+  {
+    "Title": "Comprehensive Health & Wellness",
+    "Description": "We've got you and your family covered with 100% premium-paid medical, dental, and vision plans, plus an annual wellness stipend.",
+    "ButtonText": "View Health Plans",
+    "ButtonURL": "/benefits/health-and-wellness"
+  },
+  {
+    "Title": "Flexible Work & PTO",
+    "Description": "Work from where you are most productive. We offer a stipend to set up your home office alongside a generous open-vacation policy.",
+    "ButtonText": "Explore Remote Perks",
+    "ButtonURL": "/benefits/flexible-work"
+  },
+  {
+    "Title": "Retirement & Matching",
+    "Description": "Invest in your future with our 401(k) planning program, featuring a dollar-for-dollar company match up to 4% from day one.",
+    "ButtonText": "See Financial Perks",
+    "ButtonURL": "/benefits/financial"
+  }
+]

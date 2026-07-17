@@ -1,0 +1,8 @@
+package careers
+
+import "agency-site/internal/components/careers/benefits-section"
+import "agency-site/internal/types"
+
+templ Page(benefitsData []types.BenefitsData) {
+	@benefits.BenefitsSection(benefitsData)
+}

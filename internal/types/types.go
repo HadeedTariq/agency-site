@@ -44,3 +44,10 @@ type TestimonialData struct {
 	Title string
 	Image string
 }
+
+type BenefitsData struct {
+	Title       string
+	Description string
+	ButtonText  string
+	ButtonURL   string
+}
