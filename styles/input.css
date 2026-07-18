@@ -19,3 +19,8 @@
     border-color: var(--color-gray-200, currentColor);
   }
 }
+.scroll-gradient-text {
+  background-size: 200% 100%;
+  background-position: calc(100% - var(--scroll-ratio, 0%)) center;
+  transition: background-position 0.1s linear;
+}

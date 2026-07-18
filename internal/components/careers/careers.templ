@@ -2,7 +2,9 @@ package careers
 
 import "agency-site/internal/components/careers/benefits-section"
 import "agency-site/internal/types"
+import "agency-site/internal/components/careers/help-section"
 
 templ Page(benefitsData []types.BenefitsData) {
 	@benefits.BenefitsSection(benefitsData)
+	@helpSection.HowCanWeHelpSection()
 }
