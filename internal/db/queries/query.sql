@@ -106,3 +106,11 @@ SELECT *
 FROM insights
 WHERE slug = sqlc.arg(slug)
   AND category = 'CASE_STUDY';
+
+-- name: GetPaginatedCaseStudies :many
+SELECT *
+FROM insights
+WHERE category = 'CASE_STUDY'
+ORDER BY created_at DESC
+LIMIT ?
+OFFSET ?;

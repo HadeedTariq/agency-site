@@ -51,48 +51,6 @@ templ head(title string, sentryDSN string) {
 		<script src="https://browser.sentry-cdn.com/10.10.0/bundle.tracing.min.js" crossorigin="anonymous">
 	</script>
 		@initSentry(sentryDSN)
-		// <script nonce={ templ.GetNonce(ctx) }>
-		// 	document.body.addEventListener(
-		// 		"htmx:responseError",
-		// 		function(event){
-		// 			Sentry.captureMessage(
-		// 				"HTMX Response Error",
-		// 				{
-		// 					level:"error",
-		// 					extra:{
-		// 						status:event.detail.xhr.status,
-		// 						url:event.detail.pathInfo.requestPath,
-		// 						response:event.detail.xhr.responseText
-		// 					}
-		// 				}
-		// 			);
-		// 		}
-		// 	);
-		// 	document.body.addEventListener(
-		// 		"htmx:sendError",
-		// 		function(event){
-		// 			Sentry.captureException(
-		// 				new Error("HTMX Send Error")
-		// 			);
-		// 		}
-		// 	);
-		// 	document.body.addEventListener(
-		// 		"htmx:swapError",
-		// 		function(event){
-		// 			Sentry.captureException(
-		// 				new Error("HTMX Swap Error")
-		// 			);
-		// 		}
-		// 	);
-		// 	document.body.addEventListener(
-		// 		"htmx:targetError",
-		// 		function(event){
-		// 			Sentry.captureException(
-		// 				new Error("HTMX Target Error")
-		// 			);
-		// 		}
-		// 	);
-		// </script>
 	</head>
 }
 

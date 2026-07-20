@@ -1,0 +1,63 @@
+package case_studies
+
+import (
+	"agency-site/internal/components/home/insights-section"
+	"agency-site/internal/db/queries"
+	"fmt"
+)
+
+templ CaseStudyPage(caseStudies []queries.Insight) {
+	<!-- Main Layout Container with Alpine.js configuration -->
+	<div
+		class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
+		x-data="{ selectedCategory: 'all', activeCard: null }"
+	>
+		<!-- Header Zone -->
+		<div class="mb-10 text-center md:text-left">
+			<h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+				Enterprise Case Studies
+			</h2>
+			<p class="mt-3 max-w-2xl text-xl text-gray-500">
+				Deep dives into architecture modernization, infrastructure scaling, and technical execution.
+			</p>
+		</div>
+		<!-- Case Studies Grid Area -->
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			for index, item := range caseStudies {
+				<!-- Card Wrapper with Alpine Interaction and htmx attributes -->
+				<div
+					class="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-100"
+					@mouseenter={ fmt.Sprintf("activeCard = %d", index) }
+					@mouseleave="activeCard = null"
+					hx-get={ fmt.Sprintf("/insights/%s/quick-view", item.ID) }
+					hx-trigger="click from:.quick-view-btn"
+					hx-target={ fmt.Sprintf("#metrics-panel-%s", item.ID) }
+					hx-swap="innerHTML"
+				>
+					<!-- Passing values cleanly down to your existing child component -->
+					@insights.InsightCard(queries.GetHomePageInsightsRow{
+						ID:        item.ID,
+						Title:     item.Title,
+						HeroImage: item.HeroImage,
+						Slug:      item.Slug,
+						Category:  item.Category,
+					})
+					<!-- Interactive Alpine Overlay / Utility Tray at bottom -->
+					<div class="mt-auto p-6 pt-0 flex items-center justify-between border-t border-gray-50 bg-gray-50/50">
+						<span class="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+							Case Study #{ fmt.Sprintf("%d", index + 1) }
+						</span>
+						<button
+							class="quick-view-btn text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors focus:outline-none"
+							@click.stop
+						>
+							View Metrics →
+						</button>
+					</div>
+					<!-- Dynamic htmx Injection Targeting Div -->
+					<div id={ fmt.Sprintf("metrics-panel-%s", item.ID) } class="px-6 pb-4 empty:hidden"></div>
+				</div>
+			}
+		</div>
+	</div>
+}

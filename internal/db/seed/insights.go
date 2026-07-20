@@ -38,14 +38,61 @@ var newsroomTitles = []string{
 }
 
 var caseStudyTitles = []string{
-	"Digital Transformation for a Leading Bank",
-	"Cloud Migration for Healthcare Provider",
-	"ERP Implementation Success Story",
-	"Retail Analytics Platform Case Study",
-	"Modernizing Manufacturing Operations",
-	"Scaling Infrastructure for E-commerce",
-	"AI Powered Customer Support Solution",
-	"Enterprise Automation Success Story",
+	"Zero-Trust Security Overhaul for Global FinTech",
+	"SaaS Platform Scaling to Millions of Active Users",
+	"Legacy System Modernization for Telecom Provider",
+	"Cloud-Native Core Banking System Migration",
+	"Kubernetes Orchestration for Multi-Region DevOps",
+	"Disaster Recovery Architecture for Legal Enterprise",
+	"Migrating Monolithic Architectures to Serverless Microservices",
+	"Hybrid Cloud Implementation for High-Frequency Trading",
+	"API-First Replatforming for National Insurance Carrier",
+
+	// Supply Chain, Logistics & Manufacturing
+	"Supply Chain Optimization for Logistics Giant",
+	"Predictive Maintenance Implementation in Aviation",
+	"IoT Smart Warehouse Deployment Success Story",
+	"Fleet Telematics Integration for Global Shipping",
+	"Automating Procurement Workflows for Heavy Industry",
+	"Digital Freight Matching Engine Implementation",
+	"Cold Chain Visibility Enhancement for Food Logistics",
+	"Smart Factory Automation via Edge Computing",
+	"Just-In-Time Inventory Management System Rollout",
+
+	// Data Engineering, Analytics & AI
+	"Data Lakehouse Architecture for Media Enterprise",
+	"Predictive Churn Analytics for Subscription Service",
+	"Computer Vision Implementation for Quality Control",
+	"Natural Language Processing for Document Automation",
+	"Real-Time Fraud Detection Engine for Digital Wallet",
+	"Enterprise Data Governance Framework Deployment",
+	"AI-Driven Dynamic Pricing Engine for Hospitality",
+	"Personalization Recommendation Graph for Streaming Giant",
+	"Automating Credit Scoring with Machine Learning Models",
+
+	// Healthcare, Pharma & Compliance
+	"Automating Regulatory Compliance for Pharma",
+	"Telehealth Platform Scale-Up During Demand Spikes",
+	"Interoperable Electronic Health Record (EHR) Integration",
+	"HIPAA-Compliant Patient Portal Re-Engineering",
+	"Clinical Trial Data Analytics Modernization",
+	"Medical Device Remote Monitoring IoT Network",
+	"Decentralized Research Database for Genomic Science",
+	"Optimizing Hospital Resource Allocation via Analytics",
+
+	// Retail, Marketing & Customer Experience
+	"Omnichannel Customer Experience Replatforming",
+	"Headless Commerce Migration for Luxury Retailer",
+	"Loyalty Program Gamification Driving Higher Retention",
+	"Automated Customer Journey Mapping Engine Success",
+	"Point of Sale (POS) Hardware Ecosystem Modernization",
+	"Hyper-Local Digital Marketing Attribute Platform",
+
+	// Energy, Government & Special Fields
+	"Grid Modernization Analytics for Energy Provider",
+	"Smart City Traffic Management System Implementation",
+	"Renewable Energy Asset Portfolio Tracking System",
+	"Public Sector Digital Identity Verification Infrastructure",
 }
 
 func markdown(title string) string {
@@ -92,7 +139,7 @@ func SeedInsights(
 	database *sql.DB,
 ) error {
 
-	gofakeit.Seed(20)
+	gofakeit.Seed(38)
 
 	tx, err := database.BeginTx(ctx, nil)
 	if err != nil {
@@ -103,13 +150,13 @@ func SeedInsights(
 
 	q := db.New(tx)
 
-	if err := seedCategory(ctx, q, "BLOG", blogTitles, 10); err != nil {
-		return err
-	}
+	// if err := seedCategory(ctx, q, "BLOG", blogTitles, 10); err != nil {
+	// 	return err
+	// }
 
-	if err := seedCategory(ctx, q, "NEWSROOM", newsroomTitles, 10); err != nil {
-		return err
-	}
+	// if err := seedCategory(ctx, q, "NEWSROOM", newsroomTitles, 10); err != nil {
+	// 	return err
+	// }
 
 	if err := seedCategory(ctx, q, "CASE_STUDY", caseStudyTitles, 10); err != nil {
 		return err
