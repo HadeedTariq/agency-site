@@ -134,19 +134,26 @@ func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 
+	totalCount, err := queries.New(h.database.DB()).GetCaseStudiesCount(r.Context())
+
+	totalPages := 1
+	if totalCount > 0 {
+		totalPages = int((totalCount + limit - 1) / limit)
+	}
+
+	pageComponent := case_studies.CaseStudyPage(caseStudies, page, totalPages)
+	isHX := r.Header.Get("HX-Request") == "true"
+
+	if isHX {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		pageComponent.Render(r.Context(), w)
+		return
+	}
+
 	if err != nil {
-		h.html(
-			r.Context(),
-			w,
-			http.StatusBadRequest,
-			core.HTML(
-				"Error Occured",
-				sentryDsn,
-				h.Header,
-				true,
-				errorPage.ErrorPage("Something went wrong"),
-			),
-		)
+		h.renderError(w, r, sentryDsn, "Failed to load case studies")
+		return // ALWAYS return on error
 	}
 
 	h.html(
@@ -158,7 +165,22 @@ func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 			sentryDsn,
 			h.Header,
 			true,
-			case_studies.CaseStudyPage(caseStudies),
+			pageComponent,
+		),
+	)
+}
+
+func (h *Handler) renderError(w http.ResponseWriter, r *http.Request, sentryDsn, msg string) {
+	h.html(
+		r.Context(),
+		w,
+		http.StatusBadRequest,
+		core.HTML(
+			"Error Occurred",
+			sentryDsn,
+			h.Header,
+			true,
+			errorPage.ErrorPage(msg),
 		),
 	)
 }

@@ -114,3 +114,5 @@ WHERE category = 'CASE_STUDY'
 ORDER BY created_at DESC
 LIMIT ?
 OFFSET ?;
+-- name: GetCaseStudiesCount :one
+SELECT COUNT(*) FROM insights WHERE category = 'CASE_STUDY';
