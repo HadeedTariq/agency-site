@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func (h *Handler) NewsRoomDetails(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +117,7 @@ func (h *Handler) CaseStudyDetails(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 	sentryDsn := os.Getenv("SENTRY_BROWSER_DSN")
 
+	search := strings.TrimSpace(r.URL.Query().Get("search"))
 	page := 1
 
 	if pageParam := r.URL.Query().Get("page"); pageParam != "" {
@@ -124,22 +126,31 @@ func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if r.Header.Get("HX-Trigger") == "search-input" {
+		page = 1
+	}
+
+	totalCount, err := queries.New(h.database.DB()).GetCaseStudiesCount(r.Context(), search)
+
 	const limit = int64(4)
-
-	caseStudies, err := queries.New(h.database.DB()).GetPaginatedCaseStudies(
-		r.Context(),
-		queries.GetPaginatedCaseStudiesParams{
-			Limit:  limit,
-			Offset: int64((page - 1) * int(limit)),
-		},
-	)
-
-	totalCount, err := queries.New(h.database.DB()).GetCaseStudiesCount(r.Context())
 
 	totalPages := 1
 	if totalCount > 0 {
 		totalPages = int((totalCount + limit - 1) / limit)
 	}
+
+	if page > totalPages {
+		page = 1
+	}
+
+	caseStudies, err := queries.New(h.database.DB()).GetPaginatedCaseStudies(
+		r.Context(),
+		queries.GetPaginatedCaseStudiesParams{
+			Search:    search,
+			LimitVal:  limit,
+			OffsetVal: int64((page - 1) * int(limit)),
+		},
+	)
 
 	pageComponent := case_studies.CaseStudyPage(caseStudies, page, totalPages)
 	isHX := r.Header.Get("HX-Request") == "true"
@@ -147,7 +158,7 @@ func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 	if isHX {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		pageComponent.Render(r.Context(), w)
+		case_studies.CaseStudiesCards(caseStudies, page, totalPages).Render(r.Context(), w)
 		return
 	}
 

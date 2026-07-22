@@ -106,13 +106,27 @@ SELECT *
 FROM insights
 WHERE slug = sqlc.arg(slug)
   AND category = 'CASE_STUDY';
-
 -- name: GetPaginatedCaseStudies :many
 SELECT *
 FROM insights
 WHERE category = 'CASE_STUDY'
+  AND status = 'PUBLISHED'
+  AND (
+    sqlc.arg(search) = '' 
+    OR title LIKE '%' || sqlc.arg(search) || '%' 
+    OR excerpt LIKE '%' || sqlc.arg(search) || '%'
+  )
 ORDER BY created_at DESC
-LIMIT ?
-OFFSET ?;
+LIMIT sqlc.arg(limit_val)
+OFFSET sqlc.arg(offset_val);
+
 -- name: GetCaseStudiesCount :one
-SELECT COUNT(*) FROM insights WHERE category = 'CASE_STUDY';
+SELECT COUNT(*) 
+FROM insights 
+WHERE category = 'CASE_STUDY'
+  AND status = 'PUBLISHED'
+  AND (
+    sqlc.arg(search) = '' 
+    OR title LIKE '%' || sqlc.arg(search) || '%' 
+    OR excerpt LIKE '%' || sqlc.arg(search) || '%'
+  );
