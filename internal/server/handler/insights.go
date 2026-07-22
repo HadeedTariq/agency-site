@@ -118,32 +118,34 @@ func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 	sentryDsn := os.Getenv("SENTRY_BROWSER_DSN")
 
 	search := strings.TrimSpace(r.URL.Query().Get("search"))
-	page := 1
 
+	page := 1
 	if pageParam := r.URL.Query().Get("page"); pageParam != "" {
 		if p, err := strconv.Atoi(pageParam); err == nil && p > 0 {
 			page = p
 		}
 	}
 
-	if r.Header.Get("HX-Trigger") == "search-input" {
+	// Reset page to 1 whenever the search input triggers the request
+	isSearchTrigger := r.Header.Get("HX-Trigger") == "search-input"
+	if isSearchTrigger {
 		page = 1
 	}
 
-	totalCount, err := queries.New(h.database.DB()).GetCaseStudiesCount(r.Context(), search)
+	const limit = int64(6) // Set your preferred batch size per load
+	db := queries.New(h.database.DB())
 
-	const limit = int64(4)
-
-	totalPages := 1
-	if totalCount > 0 {
-		totalPages = int((totalCount + limit - 1) / limit)
+	// 1. Fetch Total Count for Infinite Scroll Boundary
+	totalCount, err := db.GetCaseStudiesCount(r.Context(), search)
+	if err != nil {
+		h.renderError(w, r, sentryDsn, "Failed to load count")
+		return
 	}
 
-	if page > totalPages {
-		page = 1
-	}
+	hasMore := int64(page*int(limit)) < totalCount
 
-	caseStudies, err := queries.New(h.database.DB()).GetPaginatedCaseStudies(
+	// 2. Fetch Data
+	caseStudies, err := db.GetPaginatedCaseStudies(
 		r.Context(),
 		queries.GetPaginatedCaseStudiesParams{
 			Search:    search,
@@ -151,22 +153,32 @@ func (h *Handler) CaseStudies(w http.ResponseWriter, r *http.Request) {
 			OffsetVal: int64((page - 1) * int(limit)),
 		},
 	)
+	if err != nil {
+		h.renderError(w, r, sentryDsn, "Failed to load case studies")
+		return
+	}
 
-	pageComponent := case_studies.CaseStudyPage(caseStudies, page, totalPages)
 	isHX := r.Header.Get("HX-Request") == "true"
 
 	if isHX {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		case_studies.CaseStudiesCards(caseStudies, page, totalPages).Render(r.Context(), w)
+
+		// SCENARIO A: Search Input Triggered (Page 1)
+		// We re-render the wrapper inner HTML to clear previous results
+		if isSearchTrigger || page == 1 {
+			case_studies.SearchResults(caseStudies, page, hasMore, search).Render(r.Context(), w)
+			return
+		}
+
+		// SCENARIO B: Scroll Triggered (Page > 1)
+		// Append only the new batch of cards
+		case_studies.CaseStudyItems(caseStudies, page, hasMore, search).Render(r.Context(), w)
 		return
 	}
 
-	if err != nil {
-		h.renderError(w, r, sentryDsn, "Failed to load case studies")
-		return // ALWAYS return on error
-	}
-
+	// Direct Page Load / Refresh
+	pageComponent := case_studies.CaseStudyPage(caseStudies, page, hasMore, search)
 	h.html(
 		r.Context(),
 		w,

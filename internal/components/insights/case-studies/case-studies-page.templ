@@ -1,21 +1,19 @@
 package case_studies
 
 import (
-	"github.com/templui/templui/components/pagination"
-
 	"agency-site/internal/components/home/insights-section"
 	"agency-site/internal/db/queries"
 	"fmt"
 )
 
-templ CaseStudyPage(caseStudies []queries.Insight, currentPage, totalPages int) {
+templ CaseStudyPage(caseStudies []queries.Insight, currentPage int, hasMore bool, search string) {
 	<!-- Main Layout Container with Alpine.js configuration -->
 	@CaseStudySearchBar()
-	@CaseStudiesCards(caseStudies, currentPage, totalPages)
+	@CaseStudyItems(caseStudies, currentPage, hasMore, search)
 }
 
-templ CaseStudiesCards(caseStudies []queries.Insight, currentPage, totalPages int) {
-	<div id="case-studies">
+templ CaseStudyItems(caseStudies []queries.Insight, currentPage int, hasMore bool, search string) {
+	<div id="case-study-list">
 		<div
 			class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12"
 			x-data="{ selectedCategory: 'all', activeCard: null }"
@@ -36,138 +34,24 @@ templ CaseStudiesCards(caseStudies []queries.Insight, currentPage, totalPages in
 				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
 			>
 				for index, item := range caseStudies {
-					<!-- Card Wrapper with Alpine Interaction and htmx attributes -->
-					<div
-						x-show="show"
-						x-transition:enter="transition ease-out duration-500"
-						x-transition:enter-start="opacity-0 translate-y-8"
-						x-transition:enter-end="opacity-100 translate-y-0"
-						style={ fmt.Sprintf("transition-delay: %dms;", index*75) }
-						class="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-100"
-						@mouseenter={ fmt.Sprintf("activeCard = %d", index) }
-						@mouseleave="activeCard = null"
-					>
-						<!-- Passing values cleanly down to your existing child component -->
-						@insights.InsightCard(queries.GetHomePageInsightsRow{
-							ID:        item.ID,
-							Title:     item.Title,
-							HeroImage: item.HeroImage,
-							Slug:      item.Slug,
-							Category:  item.Category,
-						})
-						<!-- Interactive Alpine Overlay / Utility Tray at bottom -->
-						<div class="mt-auto p-6 pt-0 flex items-center justify-between border-t border-gray-50 bg-gray-50/50">
-							<span class="text-xs font-semibold tracking-wider text-gray-400 uppercase">
-								Case Study #{ fmt.Sprintf("%d", index + 1) }
-							</span>
-							<button
-								class="quick-view-btn text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors focus:outline-none"
-								@click.stop
-							>
-								View Metrics →
-							</button>
+					if index == len(caseStudies)-1 && hasMore {
+						<div
+							class="group relative flex flex-col rounded-2xl bg-white border border-gray-100 shadow-sm"
+							hx-get={ fmt.Sprintf("/case-studies?page=%d&search=%s", currentPage+1, search) }
+							hx-trigger="revealed"
+							hx-target="#case-study-list"
+							hx-swap="beforeend"
+						>
+							@CardContent(item, index)
 						</div>
-						<!-- Dynamic htmx Injection Targeting Div -->
-						<div id={ fmt.Sprintf("metrics-panel-%s", item.ID) } class="px-6 pb-4 empty:hidden"></div>
-					</div>
+					} else {
+						<div class="group relative flex flex-col rounded-2xl bg-white border border-gray-100 shadow-sm">
+							@CardContent(item, index)
+						</div>
+					}
 				}
 			</div>
 		</div>
-		@PaginationWithHelper(currentPage, totalPages)
-	</div>
-}
-
-templ PaginationWithHelper(currentPage int, totalPages int) {
-	<!-- Initialize helper struct -->
-	{{ p := pagination.CreatePagination(currentPage, totalPages, 3) }}
-	<div class="flex items-center justify-center space-x-2 my-8">
-		<!-- Previous Page Link -->
-		if p.HasPrevious {
-			<a
-				hx-get={ fmt.Sprintf("?page=%d", p.CurrentPage-1) }
-				hx-target="#case-studies"
-				hx-swap="outerHTML show:top"
-				hx-include="[name='search']"
-				hx-push-url="true"
-				class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-			>
-				Previous
-			</a>
-		} else {
-			<span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
-				Previous
-			</span>
-		}
-		<!-- First Page (with Ellipsis if needed) -->
-		if len(p.Pages) > 0 && p.Pages[0] > 1 {
-			<a
-				hx-get="?page=1"
-				hx-target="#case-studies"
-				hx-swap="outerHTML show:top"
-				hx-include="[name='search']"
-				hx-push-url="true"
-				class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-			>
-				1
-			</a>
-			if p.Pages[0] > 2 {
-				<span class="px-2 py-2 text-sm text-gray-400">...</span>
-			}
-		}
-		<!-- Visible Page Numbers -->
-		for _, page := range p.Pages {
-			if page == p.CurrentPage {
-				<!-- Active Page -->
-				<span class="px-3 py-2 text-sm font-bold text-white bg-blue-600 border border-blue-600 rounded-lg shadow-xs">
-					{ fmt.Sprint(page) }
-				</span>
-			} else {
-				<!-- Inactive Page Link -->
-				<a
-					hx-get={ fmt.Sprintf("?page=%d", page) }
-					hx-target="#case-studies"
-					hx-swap="outerHTML show:top"
-					hx-include="[name='search']"
-					hx-push-url="true"
-					class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-				>
-					{ fmt.Sprint(page) }
-				</a>
-			}
-		}
-		<!-- Last Page (with Ellipsis if needed) -->
-		if len(p.Pages) > 0 && p.Pages[len(p.Pages)-1] < p.TotalPages {
-			if p.Pages[len(p.Pages)-1] < p.TotalPages-1 {
-				<span class="px-2 py-2 text-sm text-gray-400">...</span>
-			}
-			<a
-				hx-get={ fmt.Sprintf("?page=%d", p.TotalPages) }
-				hx-target="#case-studies"
-				hx-swap="outerHTML show:top"
-				hx-include="[name='search']"
-				hx-push-url="true"
-				class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-			>
-				{ fmt.Sprint(p.TotalPages) }
-			</a>
-		}
-		<!-- Next Page Link -->
-		if p.HasNext {
-			<a
-				hx-get={ fmt.Sprintf("?page=%d", p.CurrentPage+1) }
-				hx-target="#case-studies"
-				hx-swap="outerHTML show:top"
-				hx-include="[name='search']"
-				hx-push-url="true"
-				class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-			>
-				Next
-			</a>
-		} else {
-			<span class="px-3 py-2 text-sm font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed">
-				Next
-			</span>
-		}
 	</div>
 }
 
@@ -201,8 +85,8 @@ templ CaseStudySearchBar() {
 					class="w-full pl-10 pr-10 py-2.5 text-sm sm:text-base text-gray-900 placeholder-gray-400 bg-gray-50/50 rounded-xl border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
 					hx-get="/insights/case-studies"
 					hx-trigger="keyup changed delay:300ms, search"
-					hx-target="#case-studies"
-					hx-swap="outerHTML show:top"
+					hx-target="#case-study-list"
+					hx-swap="innerHTML"
 					hx-push-url="true"
 				/>
 				<!-- Clear Button -->
@@ -268,5 +152,51 @@ templ CaseStudySearchBar() {
 				</div>
 			</div>
 		</div>
+	</div>
+}
+
+templ SearchResults(caseStudies []queries.Insight, currentPage int, hasMore bool, search string) {
+	if len(caseStudies) == 0 {
+		<div class="col-span-full text-center py-12 text-gray-500">
+			No case studies found matching "{ search }".
+		</div>
+	} else {
+		@CaseStudyItems(caseStudies, currentPage, hasMore, search)
+	}
+}
+
+templ CardContent(item queries.Insight, index int) {
+	<div
+		x-show="show"
+		x-transition:enter="transition ease-out duration-500"
+		x-transition:enter-start="opacity-0 translate-y-8"
+		x-transition:enter-end="opacity-100 translate-y-0"
+		style={ fmt.Sprintf("transition-delay: %dms;", index*75) }
+		class="group relative flex flex-col overflow-hidden rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-100"
+		@mouseenter={ fmt.Sprintf("activeCard = %d", index) }
+		@mouseleave="activeCard = null"
+	>
+		<!-- Passing values cleanly down to your existing child component -->
+		@insights.InsightCard(queries.GetHomePageInsightsRow{
+			ID:        item.ID,
+			Title:     item.Title,
+			HeroImage: item.HeroImage,
+			Slug:      item.Slug,
+			Category:  item.Category,
+		})
+		<!-- Interactive Alpine Overlay / Utility Tray at bottom -->
+		<div class="mt-auto p-6 pt-0 flex items-center justify-between border-t border-gray-50 bg-gray-50/50">
+			<span class="text-xs font-semibold tracking-wider text-gray-400 uppercase">
+				Case Study #{ fmt.Sprintf("%d", index + 1) }
+			</span>
+			<button
+				class="quick-view-btn text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors focus:outline-none"
+				@click.stop
+			>
+				View Metrics →
+			</button>
+		</div>
+		<!-- Dynamic htmx Injection Targeting Div -->
+		<div id={ fmt.Sprintf("metrics-panel-%s", item.ID) } class="px-6 pb-4 empty:hidden"></div>
 	</div>
 }
